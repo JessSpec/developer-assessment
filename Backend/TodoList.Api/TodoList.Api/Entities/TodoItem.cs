@@ -1,11 +1,14 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace TodoList.Api
+namespace TodoList.Api.Entities
 {
     public class TodoItem
     {
-        public Guid Id { get; set; }
+        [Key]
+        public int Id { get; set; }
 
+        [Required]
         public string Description { get; set; }
 
         public bool IsCompleted { get; set; }

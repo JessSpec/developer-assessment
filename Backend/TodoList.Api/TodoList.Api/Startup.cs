@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using TodoList.Api.Contexts;
+using TodoList.Api.Repositories;
 
 namespace TodoList.Api
 {
@@ -17,11 +19,11 @@ namespace TodoList.Api
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors(options =>
             {
+                //todo: fix cors - read from config per env
                 options.AddPolicy("AllowAllHeaders",
                       builder =>
                       {
@@ -38,9 +40,9 @@ namespace TodoList.Api
             });
 
             services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase("TodoItemsDB"));
+            services.AddTransient<ITodoItemsRepository, TodoItemsRepository>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -54,6 +56,7 @@ namespace TodoList.Api
 
             app.UseRouting();
 
+            //todo: dupe
             app.UseCors("AllowAllHeaders");
 
             app.UseAuthorization();

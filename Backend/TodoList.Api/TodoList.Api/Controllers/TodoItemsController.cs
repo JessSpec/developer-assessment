@@ -42,13 +42,14 @@ namespace TodoList.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItem(int id, TodoItem todoItem)
+        public async Task<IActionResult> PutTodoItem(int id, TodoItemDto todoItemDto)
         {
             if (id != todoItem.Id)
             {
                 return BadRequest();
             }
 
+            var todoItem = _mapper.Map<TodoItemDto, TodoItem>(todoItemDto);
             await _todoItemRepository.UpdateItem(id, todoItem);
 
             return NoContent();

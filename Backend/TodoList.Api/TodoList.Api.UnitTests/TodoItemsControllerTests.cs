@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using System.Collections.Generic;
@@ -27,15 +26,13 @@ namespace TodoList.Api.UnitTests
                 new TodoItem() {Id = 2, Description = "Test", IsCompleted = false },
             };
 
-            var loggerMock = Substitute.For<ILogger<TodoItemsController>>();
-
             var repositoryMock = Substitute.For<ITodoItemsRepository>();
             repositoryMock.FindAllItems().Returns(_inMemoryList);
             repositoryMock.FindItemById(1).Returns(_inMemoryList.Where(t => t.Id == 1).FirstOrDefault());
             repositoryMock.FindItemById(nullId).ReturnsNull();
             repositoryMock.TodoItemDescriptionExists(existsDescription).Returns(true);
 
-            _controller = new TodoItemsController(repositoryMock, loggerMock);
+            _controller = new TodoItemsController(repositoryMock);
         }
 
         [Fact]

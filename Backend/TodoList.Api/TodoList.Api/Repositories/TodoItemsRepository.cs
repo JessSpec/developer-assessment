@@ -23,7 +23,6 @@ namespace TodoList.Api.Repositories
 
         public async Task<TodoItem> FindItemById(int id)
         {
-            //todo: no check for iscompleted?
             return await _context.TodoItems.FindAsync(id);
         }
 
@@ -37,7 +36,7 @@ namespace TodoList.Api.Repositories
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!TodoItemIdExists(id))
+                if (!await TodoItemIdExists(id))
                 {
                     //throw specific exception?
                     //return null();
@@ -56,17 +55,15 @@ namespace TodoList.Api.Repositories
             await _context.SaveChangesAsync();
         }
 
-        //todo: convert to async
-        private bool TodoItemIdExists(int id)
+        public async Task<bool> TodoItemDescriptionExists(string description)
         {
-            return _context.TodoItems.Any(x => x.Id == id);
+            return await _context.TodoItems
+                   .AnyAsync(x => x.Description.ToLowerInvariant() == description.ToLowerInvariant() && !x.IsCompleted);
         }
 
-        //todo: convert to async
-        public bool TodoItemDescriptionExists(string description)
+        private async Task<bool> TodoItemIdExists(int id)
         {
-            return _context.TodoItems
-                   .Any(x => x.Description.ToLowerInvariant() == description.ToLowerInvariant() && !x.IsCompleted);
-        }
+            return await _context.TodoItems.AnyAsync(x => x.Id == id);
+        }       
     }
 }

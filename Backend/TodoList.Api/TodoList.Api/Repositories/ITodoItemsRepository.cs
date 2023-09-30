@@ -10,6 +10,6 @@ namespace TodoList.Api.Repositories
         Task<IList<TodoItem>> FindAllItems();
         Task<TodoItem> FindItemById(int id);
         Task UpdateItem(int id, TodoItem todoItem);
-        bool TodoItemDescriptionExists(string description);
+        Task<bool> TodoItemDescriptionExists(string description);
     }
 }

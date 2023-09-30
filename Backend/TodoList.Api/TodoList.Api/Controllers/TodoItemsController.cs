@@ -11,13 +11,10 @@ namespace TodoList.Api.Controllers
     public class TodoItemsController : ControllerBase
     {
         private readonly ITodoItemsRepository _todoItemRepository;
-        private readonly ILogger<TodoItemsController> _logger;
 
-        public TodoItemsController(ITodoItemsRepository todoItemsRepository, ILogger<TodoItemsController> logger)
+        public TodoItemsController(ITodoItemsRepository todoItemsRepository)
         {
             _todoItemRepository = todoItemsRepository;
-            //todo: logger is unused
-            _logger = logger;
         }
 
         [HttpGet]
@@ -62,7 +59,7 @@ namespace TodoList.Api.Controllers
             {
                 return BadRequest("Description is required");
             }
-            else if (_todoItemRepository.TodoItemDescriptionExists(todoItem.Description))
+            else if (await _todoItemRepository.TodoItemDescriptionExists(todoItem.Description))
             {
                 return BadRequest("Description already exists");
             }

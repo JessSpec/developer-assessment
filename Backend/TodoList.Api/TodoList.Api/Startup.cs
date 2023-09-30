@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using System;
 using TodoList.Api.Contexts;
 using TodoList.Api.Repositories;
 
@@ -23,7 +24,6 @@ namespace TodoList.Api
         {
             services.AddCors(options =>
             {
-                //todo: fix cors - read from config per env
                 options.AddPolicy("AllowAllHeaders",
                       builder =>
                       {
@@ -33,6 +33,7 @@ namespace TodoList.Api
                       });
             });
 
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -56,7 +57,6 @@ namespace TodoList.Api
 
             app.UseRouting();
 
-            //todo: dupe
             app.UseCors("AllowAllHeaders");
 
             app.UseAuthorization();

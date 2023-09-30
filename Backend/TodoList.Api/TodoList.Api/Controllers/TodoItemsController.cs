@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TodoList.Api.Entities;
+using TodoList.Api.Models;
 using TodoList.Api.Repositories;
 
 namespace TodoList.Api.Controllers
@@ -11,17 +15,19 @@ namespace TodoList.Api.Controllers
     public class TodoItemsController : ControllerBase
     {
         private readonly ITodoItemsRepository _todoItemRepository;
+        private readonly IMapper _mapper;
 
-        public TodoItemsController(ITodoItemsRepository todoItemsRepository)
+        public TodoItemsController(ITodoItemsRepository todoItemsRepository, IMapper mapper)
         {
             _todoItemRepository = todoItemsRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetTodoItems()
         {
-            var results = await _todoItemRepository.FindAllItems();
-            return Ok(results);
+            var results = await _todoItemRepository.FindAllItems();            
+            return Ok(_mapper.Map<IList<TodoItem>, IList<TodoItemDto>>(results));
         }
 
         [HttpGet("{id}")]
@@ -34,14 +40,12 @@ namespace TodoList.Api.Controllers
                 return NotFound();
             }
 
-            return Ok(result);
+            return Ok(_mapper.Map<TodoItem, TodoItemDto>(result));
         }
 
-        //todo: check this.
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTodoItem(int id, TodoItem todoItem)
         {
-            //todo: not sure this check is needed?
             if (id != todoItem.Id)
             {
                 return BadRequest();
@@ -53,18 +57,19 @@ namespace TodoList.Api.Controllers
         } 
 
         [HttpPost]
-        public async Task<IActionResult> PostTodoItem(TodoItem todoItem)
+        public async Task<IActionResult> PostTodoItem(TodoItemDto todoItemDto)
         {
-            if (string.IsNullOrEmpty(todoItem?.Description))
+            if (string.IsNullOrEmpty(todoItemDto?.Description))
             {
                 return BadRequest("Description is required");
             }
-            else if (await _todoItemRepository.TodoItemDescriptionExists(todoItem.Description))
+            else if (await _todoItemRepository.TodoItemDescriptionExists(todoItemDto.Description))
             {
                 return BadRequest("Description already exists");
             }
 
             //todo: error handling here.
+            var todoItem = _mapper.Map<TodoItemDto, TodoItem>(todoItemDto);
             await _todoItemRepository.AddItem(todoItem);
              
             return CreatedAtAction(nameof(GetTodoItem), new { id = todoItem.Id }, todoItem);

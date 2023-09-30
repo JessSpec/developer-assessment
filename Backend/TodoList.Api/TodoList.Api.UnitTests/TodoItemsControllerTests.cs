@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TodoList.Api.Controllers;
 using TodoList.Api.Entities;
+using TodoList.Api.Models;
 using TodoList.Api.Repositories;
 using Xunit;
 
@@ -32,7 +34,11 @@ namespace TodoList.Api.UnitTests
             repositoryMock.FindItemById(nullId).ReturnsNull();
             repositoryMock.TodoItemDescriptionExists(existsDescription).Returns(true);
 
-            _controller = new TodoItemsController(repositoryMock);
+            var mapperConfiguration = new MapperConfiguration(
+                config => config.AddProfile<Profiles.TodoItemProfile>());
+            var mapper = new Mapper(mapperConfiguration);
+
+            _controller = new TodoItemsController(repositoryMock, mapper);
         }
 
         [Fact]
@@ -46,7 +52,7 @@ namespace TodoList.Api.UnitTests
 
             Assert.NotNull(okResult);
 
-            var data = okResult.Value as List<TodoItem>;
+            var data = okResult.Value as List<TodoItemDto>;
             Assert.NotNull(data);
 
             Assert.Equal(_inMemoryList.Count(), data.Count());
@@ -62,7 +68,7 @@ namespace TodoList.Api.UnitTests
 
             Assert.NotNull(okResult);
 
-            var data = okResult.Value as TodoItem;
+            var data = okResult.Value as TodoItemDto;
             Assert.NotNull(data);
             Assert.Equal(1, data.Id);
         }
@@ -106,7 +112,7 @@ namespace TodoList.Api.UnitTests
         [Fact]
         public async Task PostTodoItem_Should_CreateNewItem()
         {
-            var testTodoItem = new TodoItem() { Id = 0, Description = "My new item", IsCompleted = false };
+            var testTodoItem = new TodoItemDto() { Id = 0, Description = "My new item", IsCompleted = false };
             var response = await _controller.PostTodoItem(testTodoItem);
 
             var viewResult = Assert.IsAssignableFrom<ActionResult>(response);
@@ -118,7 +124,7 @@ namespace TodoList.Api.UnitTests
         [Fact]
         public async Task PostTodoItem_Should_ValidateDescription()
         {
-            var testTodoItem = new TodoItem() { Id = 0, Description = string.Empty, IsCompleted = false };
+            var testTodoItem = new TodoItemDto() { Id = 0, Description = string.Empty, IsCompleted = false };
             var response = await _controller.PostTodoItem(testTodoItem);
 
             var viewResult = Assert.IsAssignableFrom<ActionResult>(response);
@@ -131,7 +137,7 @@ namespace TodoList.Api.UnitTests
         [Fact]
         public async Task PostTodoItem_Should_ValidateDescriptionAlreadyExists()
         {
-            var testTodoItem = new TodoItem() { Id = 0, Description = existsDescription, IsCompleted = false };
+            var testTodoItem = new TodoItemDto() { Id = 0, Description = existsDescription, IsCompleted = false };
             var response = await _controller.PostTodoItem(testTodoItem);
 
             var viewResult = Assert.IsAssignableFrom<ActionResult>(response);

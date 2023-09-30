@@ -37,7 +37,6 @@ namespace TodoList.Api.Repositories
             }
             catch (DbUpdateConcurrencyException)
             {
-                //was just id
                 if (!TodoItemIdExists(id))
                 {
                     //throw specific exception?

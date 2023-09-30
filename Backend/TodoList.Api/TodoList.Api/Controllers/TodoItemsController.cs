@@ -44,7 +44,7 @@ namespace TodoList.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTodoItem(int id, TodoItemDto todoItemDto)
         {
-            if (id != todoItem.Id)
+            if (id != todoItemDto.Id)
             {
                 return BadRequest();
             }

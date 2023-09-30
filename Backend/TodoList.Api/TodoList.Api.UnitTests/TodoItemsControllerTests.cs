@@ -87,7 +87,7 @@ namespace TodoList.Api.UnitTests
         [Fact]
         public async Task PutTodoItem_Should_UpdateExistingItem()
         {
-            var testTodoItem = new TodoItem() { Id = 1, Description = "My updated description", IsCompleted = false };
+            var testTodoItem = new TodoItemDto() { Id = 1, Description = "My updated description", IsCompleted = false };
             var response = await _controller.PutTodoItem(1, testTodoItem);
 
             var viewResult = Assert.IsAssignableFrom<ActionResult>(response);
@@ -99,7 +99,7 @@ namespace TodoList.Api.UnitTests
         [Fact]
         public async Task PutTodoItem_ShouldNot_UpdateNonExistingItem()
         {
-            var testTodoItem = new TodoItem() { Id = 1, Description = "My updated description", IsCompleted = true };
+            var testTodoItem = new TodoItemDto() { Id = 1, Description = "My updated description", IsCompleted = true };
             var response = await _controller.PutTodoItem(4, testTodoItem);
 
             var viewResult = Assert.IsAssignableFrom<ActionResult>(response);

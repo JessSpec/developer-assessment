@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using TodoList.Api.Entities;
+﻿using TodoList.Core.Entities;
 
-namespace TodoList.Api.Repositories
+namespace TodoList.Core.Repositories
 {
     public interface ITodoItemsRepository
     {

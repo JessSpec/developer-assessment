@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TodoList.Api.Entities;
+using TodoList.Core.Entities;
 using TodoList.Api.Models;
-using TodoList.Api.Repositories;
+using TodoList.Core.Repositories;
 
 namespace TodoList.Api.Controllers
 {

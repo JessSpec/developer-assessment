@@ -6,8 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
-using TodoList.Api.Contexts;
-using TodoList.Api.Repositories;
+using TodoList.Core.Contexts;
+using TodoList.Core.Repositories;
 
 namespace TodoList.Api
 {

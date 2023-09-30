@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace TodoList.Api.Entities
+namespace TodoList.Core.Entities
 {
     public class TodoItem
     {
@@ -9,6 +9,7 @@ namespace TodoList.Api.Entities
         public int Id { get; set; }
 
         [Required]
+        //todo: enforce uniqueness at a db level?
         public string Description { get; set; }
 
         public bool IsCompleted { get; set; }

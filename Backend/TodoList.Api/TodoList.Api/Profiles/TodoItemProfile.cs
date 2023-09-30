@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using TodoList.Api.Entities;
+using TodoList.Core.Entities;
 using TodoList.Api.Models;
 
 namespace TodoList.Api.Profiles

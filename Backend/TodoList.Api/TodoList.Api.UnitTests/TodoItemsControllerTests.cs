@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TodoList.Api.Controllers;
-using TodoList.Api.Entities;
+using TodoList.Core.Entities;
 using TodoList.Api.Models;
-using TodoList.Api.Repositories;
+using TodoList.Core.Repositories;
 using Xunit;
 
 namespace TodoList.Api.UnitTests

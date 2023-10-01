@@ -64,10 +64,10 @@ namespace TodoList.Api.Controllers
             {
                 return BadRequest("Description is required");
             }
-            else if (await _todoItemRepository.TodoItemDescriptionExists(todoItemDto.Description))
-            {
-                return BadRequest("Description already exists");
-            }
+            //else if (await _todoItemRepository.TodoItemDescriptionExists(todoItemDto.Description))
+            //{
+            //    return BadRequest("Description already exists");
+            //}
 
             //todo: error handling here.
             var todoItem = _mapper.Map<TodoItemDto, TodoItem>(todoItemDto);

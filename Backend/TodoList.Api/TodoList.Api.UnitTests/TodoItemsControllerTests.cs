@@ -32,7 +32,7 @@ namespace TodoList.Api.UnitTests
             repositoryMock.FindAllItems().Returns(_inMemoryList);
             repositoryMock.FindItemById(1).Returns(_inMemoryList.Where(t => t.Id == 1).FirstOrDefault());
             repositoryMock.FindItemById(nullId).ReturnsNull();
-            repositoryMock.TodoItemDescriptionExists(existsDescription).Returns(true);
+            //repositoryMock.TodoItemDescriptionExists(existsDescription).Returns(true);
 
             var mapperConfiguration = new MapperConfiguration(
                 config => config.AddProfile<Profiles.TodoItemProfile>());
@@ -125,19 +125,6 @@ namespace TodoList.Api.UnitTests
         public async Task PostTodoItem_Should_ValidateDescription()
         {
             var testTodoItem = new TodoItemDto() { Id = 0, Description = string.Empty, IsCompleted = false };
-            var response = await _controller.PostTodoItem(testTodoItem);
-
-            var viewResult = Assert.IsAssignableFrom<ActionResult>(response);
-            var badRequest = viewResult as BadRequestObjectResult;
-
-            Assert.NotNull(badRequest);
-        }
-
-
-        [Fact]
-        public async Task PostTodoItem_Should_ValidateDescriptionAlreadyExists()
-        {
-            var testTodoItem = new TodoItemDto() { Id = 0, Description = existsDescription, IsCompleted = false };
             var response = await _controller.PostTodoItem(testTodoItem);
 
             var viewResult = Assert.IsAssignableFrom<ActionResult>(response);

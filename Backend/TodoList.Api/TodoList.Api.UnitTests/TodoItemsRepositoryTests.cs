@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TodoList.Core.Contexts;

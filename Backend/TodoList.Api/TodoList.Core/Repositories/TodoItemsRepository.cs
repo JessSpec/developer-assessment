@@ -29,7 +29,7 @@ namespace TodoList.Core.Repositories
         public async Task UpdateItem(int id, TodoItem todoItem)
         {
             //db validations
-            //todo: find a way to combine these two validations to avoid two round trips to db
+            //todo: find a way to combine these two validations to avoid two round trips to db            
             if (!await TodoItemIdExists(todoItem.Id))
             {
                 var message = $"Cannot update. Todo Item does not exist";
@@ -37,12 +37,13 @@ namespace TodoList.Core.Repositories
                 throw new SaveTodoItemException(message);
             }
 
-            if (await TodoItemDescriptionExists(todoItem.Description))
-            {
-                var message = $"Cannot update. Todo Item with description {todoItem.Description} already exists";
-                _logger.LogError(message);
-                throw new SaveTodoItemException(message);
-            }
+            //todo: still issue here - if update iscompleted only then this validation fails!
+            //if (await TodoItemDescriptionExists(todoItem.Description))
+            //{
+            //    var message = $"Cannot update. Todo Item with description {todoItem.Description} already exists";
+            //    _logger.LogError(message);
+            //    throw new SaveTodoItemException(message);
+            //}
 
             _context.Update(todoItem);
 

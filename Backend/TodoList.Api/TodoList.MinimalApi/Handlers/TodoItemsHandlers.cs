@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using TodoList.Api.Models;
 using TodoList.Core.Entities;
 using TodoList.Core.Exceptions;
@@ -8,51 +9,51 @@ namespace TodoList.MinimalApi.Handlers
 {
     public static class TodoItemsHandlers
     {
-        public static async Task<IResult> GetTodoItems(ITodoItemsRepository todoItemsRepository, IMapper mapper) 
+        public static async Task<Ok<IList<TodoItemDto>>> GetTodoItems(ITodoItemsRepository todoItemsRepository, IMapper mapper) 
         {
             var results = await todoItemsRepository.FindAllItems();
-            return Results.Ok(mapper.Map<IList<TodoItem>, IList<TodoItemDto>>(results));
+            return TypedResults.Ok(mapper.Map<IList<TodoItem>, IList<TodoItemDto>>(results));
         }
 
-
-        public static async Task<IResult> GetTodoItem(ITodoItemsRepository todoItemsRepository, IMapper mapper, int id)
+        public static async Task<Results<Ok<TodoItemDto>, NotFound>> GetTodoItem(ITodoItemsRepository todoItemsRepository, IMapper mapper, int id)
         {
             var result = await todoItemsRepository.FindItemById(id);
 
             if (result == null)
             {
-                return Results.NotFound();
+                return TypedResults.NotFound();
             }
 
-            return Results.Ok(mapper.Map<TodoItem, TodoItemDto>(result));
+            return TypedResults.Ok(mapper.Map<TodoItem, TodoItemDto>(result));
         }
 
 
-        public static async Task<IResult> PostTodoItem(ITodoItemsRepository todoItemsRepository, IMapper mapper, TodoItemDto todoItemDto)
+        public static async Task<Results<Created<TodoItemDto>, BadRequest<string>>> PostTodoItem(ITodoItemsRepository todoItemsRepository, IMapper mapper, TodoItemDto todoItemDto)
         {
             if (string.IsNullOrEmpty(todoItemDto?.Description))
             {
-                return Results.BadRequest("Description is required");
+                return TypedResults.BadRequest("Description is required");
             }
 
             var todoItem = mapper.Map<TodoItemDto, TodoItem>(todoItemDto);
             try
             {
                 await todoItemsRepository.AddItem(todoItem);
+                var itemDto = mapper.Map<TodoItem, TodoItemDto>(todoItem);
 
-                return Results.Created($"/todoitems/{todoItem.Id}", todoItem);
+                return TypedResults.Created($"/todoitems/{todoItem.Id}", itemDto);
             }
             catch (SaveTodoItemException ex)
             {
-                return Results.BadRequest(ex.Message);
+                return TypedResults.BadRequest(ex.Message);
             }
         }
 
-        public static async Task<IResult> PutTodoItem(ITodoItemsRepository todoItemsRepository, IMapper mapper, TodoItemDto todoItemDto, int id) 
+        public static async Task<Results<BadRequest<string>, NoContent>> PutTodoItem(ITodoItemsRepository todoItemsRepository, IMapper mapper, TodoItemDto todoItemDto, int id) 
         {
             if (id != todoItemDto.Id)
             {
-                return Results.BadRequest();
+                return TypedResults.BadRequest("The id's do not match");
             }
 
             var todoItem = mapper.Map<TodoItemDto, TodoItem>(todoItemDto);
@@ -61,11 +62,11 @@ namespace TodoList.MinimalApi.Handlers
             {
                 await todoItemsRepository.UpdateItem(id, todoItem);
 
-                return Results.NoContent();
+                return TypedResults.NoContent();
             }
             catch (SaveTodoItemException ex)
             {
-                return Results.BadRequest(ex.Message);
+                return TypedResults.BadRequest(ex.Message);
             }
         }
            

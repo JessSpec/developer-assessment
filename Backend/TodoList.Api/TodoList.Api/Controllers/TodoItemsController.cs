@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using TodoList.Core.Entities;
 using TodoList.Api.Models;
 using TodoList.Core.Repositories;
+using System;
 
 namespace TodoList.Api.Controllers
 {
+    [Obsolete]
     [Route("api/[controller]")]
     [ApiController]
     public class TodoItemsController : ControllerBase

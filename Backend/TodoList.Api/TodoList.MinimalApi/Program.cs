@@ -4,6 +4,7 @@ using Microsoft.OpenApi.Models;
 using TodoList.Api.Models;
 using TodoList.Core.Contexts;
 using TodoList.Core.Entities;
+using TodoList.Core.Exceptions;
 using TodoList.Core.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -56,17 +57,20 @@ app.MapPost("/todoItems", async (ITodoItemsRepository todoItemsRepository, IMapp
     if (string.IsNullOrEmpty(todoItemDto?.Description))
     {
         return Results.BadRequest("Description is required");
-    }
-    else if (await todoItemsRepository.TodoItemDescriptionExists(todoItemDto.Description))
-    {
-        return Results.BadRequest("Description already exists");
-    }
+    }    
 
-    //todo: error handling here.
     var todoItem = mapper.Map<TodoItemDto, TodoItem>(todoItemDto);
-    await todoItemsRepository.AddItem(todoItem);
+    try
+    {
+        await todoItemsRepository.AddItem(todoItem);
 
-    return Results.Created($"/todoitems/{todoItem.Id}", todoItem);
+        return Results.Created($"/todoitems/{todoItem.Id}", todoItem);
+    }
+    catch (SaveTodoItemException ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
+
 });
 
 app.MapPut("/todoItems/{id}", async (ITodoItemsRepository todoItemsRepository, IMapper mapper, TodoItemDto todoItemDto, int id) =>
@@ -77,9 +81,18 @@ app.MapPut("/todoItems/{id}", async (ITodoItemsRepository todoItemsRepository, I
     }
 
     var todoItem = mapper.Map<TodoItemDto, TodoItem>(todoItemDto);
-    await todoItemsRepository.UpdateItem(id, todoItem);
 
-    return Results.NoContent();
+    try
+    {
+        await todoItemsRepository.UpdateItem(id, todoItem);
+
+        return Results.NoContent();
+    }
+    catch(SaveTodoItemException ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
+    
 });
 
 app.Run();

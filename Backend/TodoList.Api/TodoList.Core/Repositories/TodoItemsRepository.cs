@@ -29,6 +29,7 @@ namespace TodoList.Core.Repositories
         public async Task UpdateItem(int id, TodoItem todoItem)
         {
             //db validations
+            //todo: do the description check here as well to ensure consistency between put and post
             if (!await TodoItemIdExists(todoItem.Id))
             {
                 var message = $"Todo Item {todoItem.Description} does not exist";

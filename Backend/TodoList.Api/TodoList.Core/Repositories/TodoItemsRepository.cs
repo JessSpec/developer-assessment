@@ -29,10 +29,17 @@ namespace TodoList.Core.Repositories
         public async Task UpdateItem(int id, TodoItem todoItem)
         {
             //db validations
-            //todo: do the description check here as well to ensure consistency between put and post
+            //todo: find a way to combine these two validations to avoid two round trips to db
             if (!await TodoItemIdExists(todoItem.Id))
             {
-                var message = $"Todo Item {todoItem.Description} does not exist";
+                var message = $"Cannot update. Todo Item does not exist";
+                _logger.LogError(message);
+                throw new SaveTodoItemException(message);
+            }
+
+            if (await TodoItemDescriptionExists(todoItem.Description))
+            {
+                var message = $"Cannot update. Todo Item with description {todoItem.Description} already exists";
                 _logger.LogError(message);
                 throw new SaveTodoItemException(message);
             }
@@ -43,7 +50,7 @@ namespace TodoList.Core.Repositories
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateException ex)  //appears that DbUpdateConcurrencyException is a child of DbUpateException, using parent here?
+            catch (DbUpdateException ex)  //todo: collapse these to general Exception as all catch blocks are the same
             {
                 _logger.LogError(ex.Message);
 
@@ -62,7 +69,7 @@ namespace TodoList.Core.Repositories
             //db validations
             if (await TodoItemExists(todoItem))
             {
-                var message = $"Todo Item {todoItem.Description} already exists";
+                var message = $"Cannot Create. Todo Item {todoItem.Description} already exists";
                 _logger.LogError(message);
                 throw new SaveTodoItemException(message);
             }
@@ -73,7 +80,7 @@ namespace TodoList.Core.Repositories
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateException ex)  //appears that DbUpdateConcurrencyException is a child of DbUpateException, using parent here?
+            catch (DbUpdateException ex)  //todo: collapse these to general Exception as all catch blocks are the same
             {
                 _logger.LogError(ex.Message);
                 throw new SaveTodoItemException(ex.Message);
@@ -83,7 +90,7 @@ namespace TodoList.Core.Repositories
                 _logger.LogError(opEx.Message);
                 throw new SaveTodoItemException(opEx.Message);
             }
-            catch(Exception e)      //todo: find specific exception
+            catch(Exception e) 
             {
                 _logger.LogError(e.Message);
                 throw new SaveTodoItemException(e.Message);
@@ -99,6 +106,12 @@ namespace TodoList.Core.Repositories
         private async Task<bool> TodoItemIdExists(int id)
         {
             return await _context.TodoItems.AnyAsync(x => x.Id == id);
-        }       
+        }
+
+        public async Task<bool> TodoItemDescriptionExists(string description)
+        {
+            return await _context.TodoItems
+                   .AnyAsync(x => x.Description.ToLowerInvariant() == description.ToLowerInvariant() && !x.IsCompleted);
+        }
     }
 }

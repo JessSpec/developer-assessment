@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using TodoList.MinimalApi.Handlers;
+﻿using TodoList.MinimalApi.Handlers;
 
 namespace TodoList.MinimalApi.Extensions
 {

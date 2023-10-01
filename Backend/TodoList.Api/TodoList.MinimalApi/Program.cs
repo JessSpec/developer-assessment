@@ -1,10 +1,6 @@
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using TodoList.Api.Models;
 using TodoList.Core.Contexts;
-using TodoList.Core.Entities;
-using TodoList.Core.Exceptions;
 using TodoList.Core.Repositories;
 using TodoList.MinimalApi.Extensions;
 
